@@ -11,48 +11,68 @@
 <div class="container">
     <div class="jumbotron">
         <h1>Bootstrap Tutorial</h1>
-        <div>
-            <ul id="lista">
-            </ul>
-        </div>
     </div>
+    <div id="loading">
+    </div>
+
     <form>
         <div class="form-group">
-            <label for="email">Email address:</label>
-            <input type="email" class="form-control" id="email">
-        </div>
-        <div class="form-group">
-            <label for="curso">Curso</label>
-            <select class="form-control" name="curso" id="curso">
-                <option value="0">Lenguaje</option>
-                <option value="1">Historia</option>
+            <label for="anuncio">Anuncios</label>
+            <select class="form-control" name="anuncio" id="anuncio">
             </select>
         </div>
-        <div class="checkbox">
-            <label><input type="checkbox"> Remember me</label>
-        </div>
-        <button type="submit" class="btn btn-default">Submit</button>
     </form>
+    <div class="jumbotron">
+        <strong>Título:</strong>
+        <div id="title"></div>
+
+        <strong>Contenido:</strong>
+        <div id="body"></div>
+
+        <strong>Comentarios:</strong>
+        <div>
+            <ul id="comments"></ul>
+        </div>
+    </div>
 </div>
+
 <script src="js/jquery-3.2.1.js" crossorigin="anonymous"></script>
 <script src="js/bootstrap.min.js" crossorigin="anonymous"></script>
 
 <script>
-    var select_curso = $("#curso");
-    var lista = $("#lista");
+    $(function () {
 
-    select_curso.change(function () {
-       var id = $(this).val();
+        var anuncios = $("#anuncio");
+        var loading = $("#loading");
+        var body = $("#body");
+        var title = $("#title");
+        init();
 
-       $.get('https://jsonplaceholder.typicode.com/posts', null, function (response) {
-           var html = "";
-            for (var i = 0; i<response.length; i++){
-                html = html + "<li>"+response[i].title+"</li>";
-            }
-           lista.append(html);
-       });
+
+        anuncios.change(function () {
+            var anuncio_id = $(this).val();
+            $.get('https://jsonplaceholder.typicode.com/posts/'+anuncio_id, null,
+                function (response) {
+                body.text(response.body);
+                title.text(response.title);
+            });
+        });
+
+        function init() {
+            loading.html("<p>Cargando datos...</p>");
+            $.get('https://jsonplaceholder.typicode.com/posts', null, function (response) {
+                loading.html("");
+                var html = "<option value='0'>Seleccione un anuncio</option>";
+
+                for (var i = 0; i<response.length; i++){
+                    html = html + "<option value='"+response[i].id+"'>título: "+response[i].title+"</option>";
+                }
+                anuncios.append(html);
+            });
+        }
 
     });
+
 </script>
 </body>
 </html>
