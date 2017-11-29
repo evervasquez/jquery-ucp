@@ -40,14 +40,15 @@
 <script src="js/bootstrap.min.js" crossorigin="anonymous"></script>
 
 <script>
-    $(function () {
 
+    $(function () {
         var anuncios = $("#anuncio");
         var loading = $("#loading");
         var body = $("#body");
         var title = $("#title");
-        init();
+        var comments = $("#comments");
 
+        init();
 
         anuncios.change(function () {
             var anuncio_id = $(this).val();
@@ -55,6 +56,15 @@
                 function (response) {
                 body.text(response.body);
                 title.text(response.title);
+
+                $.get('https://jsonplaceholder.typicode.com/posts/'+anuncio_id+'/comments', null,
+                    function (response) {
+                        var html = "";
+                        for (var i = 0; i<response.length; i++){
+                            html = html + "<li>"+response[i].body+"</li>";
+                        }
+                        comments.html(html);
+                });
             });
         });
 
@@ -68,6 +78,8 @@
                     html = html + "<option value='"+response[i].id+"'>título: "+response[i].title+"</option>";
                 }
                 anuncios.append(html);
+            }).catch(function (error) {
+                loading.html("Hubo un error en la conexión");
             });
         }
 

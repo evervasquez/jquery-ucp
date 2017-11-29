@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shop Form</title>
+    <link rel="stylesheet" href="css/bootstrap.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/bootstrap-theme.css" crossorigin="anonymous">
+</head>
+<body>
+
+<div class="container">
+    <div class="jumbotron">
+        <h1>Formularios en Ajax</h1>
+    </div>
+    <div id="loading">
+    </div>
+
+    <form id="form_user" method="POST">
+        <div class="form-group">
+            <label for="userId">Usuario</label>
+            <select class="form-control" name="userId" id="userId">
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input name="title" type="text" class="form-control"
+                   id="title" required aria-describedby="firstNameHelp"
+                   placeholder="Enter first name">
+        </div>
+        <div class="form-group">
+            <label for="body">Body</label>
+            <input type="text" name="body" class="form-control"
+                   id="body" required aria-describedby="lastNameHelp"
+                   placeholder="Enter last name">
+        </div>
+        <button id="send" type="button" class="btn btn-primary">Enviar</button>
+    </form>
+</div>
+
+<script src="js/jquery-3.2.1.js" crossorigin="anonymous"></script>
+<script src="js/bootstrap.min.js" crossorigin="anonymous"></script>
+
+<script>
+
+    $(function () {
+        var btn_send = $("#send");
+        var form = $("#form_user");
+        var users = $("#userId");
+        var loading = $("#loading");
+        var userId = $("#userId");
+        var title = $("#title");
+        var body = $("#body");
+
+        init();
+
+        btn_send.click(function () {
+            var data = form.serializeArray();
+            disableInputs(true);
+            btn_send.text("Enviando...");
+            
+            $.post('https://jsonplaceholder.typicode.com/posts', data,
+                function (response) {
+                    disableInputs(false);
+                    btn_send.text("Enviar");
+                    clean();
+            }).catch(function (error) {
+
+            });
+
+        });
+
+        function init() {
+            loading.html("<p>Cargando datos...</p>");
+            $.get('https://jsonplaceholder.typicode.com/users', null, function (response) {
+                loading.html("");
+                var html = "<option value='0'>Seleccione un usuario</option>";
+
+                for (var i = 0; i<response.length; i++){
+                    html = html + "<option value='"+response[i].id+"'>"+response[i].name+"</option>";
+                }
+                users.append(html);
+            }).catch(function (error) {
+                loading.html("Hubo un error en la conexión");
+            });
+        }
+        
+        function disableInputs(state) {
+            userId.attr('disabled', state);
+            title.attr('disabled', state);
+            body.attr('disabled', state);
+        }
+
+        function clean() {
+            title.val("");
+            body.val("");
+        }
+    });
+
+</script>
+
+</body>
+</html>
